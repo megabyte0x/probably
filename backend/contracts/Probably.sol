@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
 import "./ProbablyNFT.sol";
 
-contract probably is Context, Ownable, IERC721Receiver {
+contract Probably is Context, Ownable, IERC721Receiver {
     address deployer;
 
     ProbablyNFT probablyNFT;
