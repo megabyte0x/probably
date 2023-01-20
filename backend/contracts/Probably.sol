@@ -5,11 +5,10 @@ import "@chainlink/contracts/src/v0.8/VRFConsumerBase.sol";
 
 import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
 import "./ProbablyNFT.sol";
 
-contract Probably is Context, Ownable, IERC721Receiver {
+contract Probably is Context, Ownable {
     address deployer;
 
     ProbablyNFT probablyNFT;
