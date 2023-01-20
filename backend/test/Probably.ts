@@ -6,7 +6,7 @@ describe("Probably", function () {
     const probably = await ethers.getContractFactory("Probably");
     console.log(
       VRF_COORDINATOR +
-        "-----" +
+        "----" +
         LINK_TOKEN +
         "-------" +
         KEY_HASH +
