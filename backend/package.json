@@ -1,6 +1,5 @@
 {
   "name": "hardhat-project",
-  "type": "module",
   "devDependencies": {
     "@chainlink/contracts": "^0.6.0",
     "@nomicfoundation/hardhat-toolbox": "^2.0.0",
