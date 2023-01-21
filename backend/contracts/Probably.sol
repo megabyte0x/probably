@@ -5,20 +5,23 @@ import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
-import "./ProbablyNFT.sol";
+import "./Interface/IProbablyNFT.sol";
 
 contract Probably is Context, Ownable, IERC721Receiver {
     address deployer;
 
-    ProbablyNFT probablyNFT;
+    address probablyNFTAddress;
 
-    constructor(uint256 _price, string memory _baseTokenURI) IERC721Receiver() {
-        setUp(_baseTokenURI, _price);
+    IProabablyNFT probablyNFT;
+
+    constructor(address _probablyNFTAdress) IERC721Receiver() {
+        probablyNFTAddress = _probablyNFTAdress;
+        setUp(_probablyNFTAdress);
         deployer = _msgSender();
     }
 
-    function setUp(string memory _baseTokenURI, uint256 _price) internal {
-        probablyNFT = new ProbablyNFT(_baseTokenURI, _price);
+    function setUp(address _probablyNFTAddress) internal {
+        probablyNFT = IProabablyNFT(_probablyNFTAddress);
     }
 
     function getProbablyNFTAddress() public view returns (address) {
@@ -30,7 +33,7 @@ contract Probably is Context, Ownable, IERC721Receiver {
     }
 
     function deleteTicket(uint256 _tokenId) public {
-        probablyNFT.burn(_tokenId);
+        probablyNFT.burnNFT(_tokenId);
     }
 
     function pauseGame(bool _val) public onlyOwner {

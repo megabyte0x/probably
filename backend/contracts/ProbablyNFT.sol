@@ -21,6 +21,8 @@ contract ProbablyNFT is
     using Counters for Counters.Counter;
     using Strings for uint256;
 
+    address probablyContractAddress;
+
     Counters.Counter private _tokenIdCounter;
 
     string public baseTokenURI;
@@ -36,11 +38,23 @@ contract ProbablyNFT is
         price = _price;
     }
 
+    modifier onlyProbablyContract() {
+        require(msg.sender == probablyContractAddress, "ERR:NA");
+        _;
+    }
+
+    function setProbablyContract(address _probablyContractAdrress) public {
+        probablyContractAddress = _probablyContractAdrress;
+    }
+
     function _baseURI() internal view override returns (string memory) {
         return baseTokenURI;
     }
 
-    function safeMint(address to, string memory uri) public payable {
+    function safeMint(
+        address to,
+        string memory uri
+    ) external payable onlyProbablyContract {
         require(msg.value >= price, "ERR:WV");
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
@@ -48,11 +62,15 @@ contract ProbablyNFT is
         _setTokenURI(tokenId, uri);
     }
 
-    function setPaused(bool val) external onlyOwner {
+    function burnNFT(uint256 _tokenId) external onlyProbablyContract {
+        _burn(_tokenId);
+    }
+
+    function setPaused(bool val) external onlyProbablyContract {
         paused = val;
     }
 
-    function withdraw() public payable onlyOwner {
+    function withdraw() external payable onlyProbablyContract {
         uint256 _amount = address(this).balance;
 
         require(_amount > 0, "ERR:ZB");
