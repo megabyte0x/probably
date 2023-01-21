@@ -1,71 +1,51 @@
-// SPDX-License-Identifier: SEE LICENSE IN LICENSE
-pragma solidity 0.8.9;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.9;
 
-import "@chainlink/contracts/src/v0.8/VRFConsumerBase.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "@openzeppelin/contracts/utils/Strings.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract ProbablyNFT is VRFConsumerBase, ERC721Enumerable, Ownable {
+contract ProbablyNFT is
+    ERC721,
+    ERC721Enumerable,
+    ERC721URIStorage,
+    ERC721Burnable,
+    Ownable
+{
+    using Counters for Counters.Counter;
     using Strings for uint256;
+
+    Counters.Counter private _tokenIdCounter;
 
     string public baseTokenURI;
 
     uint256 public price;
-
     bool public paused;
-
-    uint256 public tokenIds;
-
-    uint256 public fee;
-
-    bytes32 public keyHash;
 
     constructor(
         string memory _baseTokenURI,
-        address vrfCoordinator,
-        address linkToken,
-        bytes32 vrfKeyHash,
-        uint256 vrfFee
-    ) VRFConsumerBase(vrfCoordinator, linkToken) ERC721("ProbablyNFT", "PN") {
-        keyHash = vrfKeyHash;
-        fee = vrfFee;
+        uint256 _price
+    ) ERC721("ProbablyNFT", "PN") {
         baseTokenURI = _baseTokenURI;
+        price = _price;
     }
 
-    modifier whenNotPaused() {
-        require(!paused, "ERR:P");
-        _;
-    }
-
-    function mint() public payable whenNotPaused {
-        require(msg.value >= price, "ERR:WV");
-
-        tokenIds += 1;
-        _safeMint(msg.sender, tokenIds);
-    }
-
-    function burn(uint256 _tokenId) public {
-        require(_exists(_tokenId), "ERR:NE");
-        _burn(_tokenId);
-    }
-
-    function _baseURI() internal view virtual override returns (string memory) {
+    function _baseURI() internal view override returns (string memory) {
         return baseTokenURI;
     }
 
-    function tokenURI(
-        uint256 tokenId
-    ) public view virtual override returns (string memory) {
-        require(_exists(tokenId), "ERR:NE");
-
-        string memory baseURI = _baseURI();
-
-        return
-            bytes(baseURI).length > 0
-                ? string(abi.encodePacked(baseURI, tokenId.toString(), ".json"))
-                : "";
+    function safeMint(address to, string memory uri) public payable {
+        require(msg.value >= price, "ERR:WV");
+        uint256 tokenId = _tokenIdCounter.current();
+        _tokenIdCounter.increment();
+        _safeMint(to, tokenId);
+        _setTokenURI(tokenId, uri);
     }
 
     function setPaused(bool val) external onlyOwner {
@@ -82,10 +62,34 @@ contract ProbablyNFT is VRFConsumerBase, ERC721Enumerable, Ownable {
         require(sent, "ERR:WT");
     }
 
-    function fulfillRandomness(
-        bytes32 requestId,
-        uint256 randomness
-    ) internal virtual override {}
+    // The following functions are overrides required by Solidity.
+
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 tokenId,
+        uint256 batchSize
+    ) internal override(ERC721, ERC721Enumerable) {
+        super._beforeTokenTransfer(from, to, tokenId, batchSize);
+    }
+
+    function _burn(
+        uint256 tokenId
+    ) internal override(ERC721, ERC721URIStorage) {
+        super._burn(tokenId);
+    }
+
+    function tokenURI(
+        uint256 tokenId
+    ) public view override(ERC721, ERC721URIStorage) returns (string memory) {
+        return super.tokenURI(tokenId);
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view override(ERC721, ERC721Enumerable) returns (bool) {
+        return super.supportsInterface(interfaceId);
+    }
 
     receive() external payable {}
 

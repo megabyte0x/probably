@@ -12,39 +12,21 @@ contract Probably is Context, Ownable, IERC721Receiver {
 
     ProbablyNFT probablyNFT;
 
-    constructor(
-        address vrfCoordinator,
-        address linkToken,
-        bytes32 vrfKeyHash,
-        uint256 vrfFee,
-        string memory _baseTokenURI
-    ) IERC721Receiver() {
-        setUp(vrfCoordinator, linkToken, vrfKeyHash, vrfFee, _baseTokenURI);
+    constructor(uint256 _price, string memory _baseTokenURI) IERC721Receiver() {
+        setUp(_baseTokenURI, _price);
         deployer = _msgSender();
     }
 
-    function setUp(
-        address vrfCoordinator,
-        address linkToken,
-        bytes32 vrfKeyHash,
-        uint256 vrfFee,
-        string memory _baseTokenURI
-    ) internal {
-        probablyNFT = new ProbablyNFT(
-            _baseTokenURI,
-            vrfCoordinator,
-            linkToken,
-            vrfKeyHash,
-            vrfFee
-        );
+    function setUp(string memory _baseTokenURI, uint256 _price) internal {
+        probablyNFT = new ProbablyNFT(_baseTokenURI, _price);
     }
 
     function getProbablyNFTAddress() public view returns (address) {
         return address(probablyNFT);
     }
 
-    function buyTicket() public payable {
-        probablyNFT.mint();
+    function buyTicket(string memory _uri) public payable {
+        probablyNFT.safeMint(_msgSender(), _uri);
     }
 
     function deleteTicket(uint256 _tokenId) public {
