@@ -20,4 +20,6 @@ The probability of winning is calculated based on:
  
  The returns generated from the liquidity pool are added to the prize money
  
- The final pool amount is used to calculate the returns generated
+ The final pool amount is used to calculate the returns generated.
+ 
+**Check out the **[wiki](https://github.com/megabyte0x/probably/wiki)** for details.**
