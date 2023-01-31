@@ -9,7 +9,7 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY || "";
 const POLYGON_SCAN_KEY = process.env.POLYGON_SCAN_KEY || "";
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.9",
+  solidity: "0.8.17",
   networks: {
     mumbai: {
       url: ALCHEMY_HTTP_URL,
